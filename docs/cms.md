@@ -12,6 +12,20 @@ Nettsiden bruker [hosted Pages CMS](https://app.pagescms.org) til redigering. De
 
 [Pages CMS sine dokumenterte samarbeidstillatelser](https://pagescms.org/docs/configuration/collaborators/) lar inviterte redaktører redigere innhold og medier uten GitHub-konto. Administrasjon av `.pages.yml` og invitasjoner forblir hos GitHub-brukere med repositorytilgang. Denne løsningen bruker disse tillatelsene uten egendefinerte roller. Invitasjoner lagres i Pages CMS, ikke i `.pages.yml`.
 
+## Se CMS-endringer lokalt
+
+Pages CMS lagrer endringer som commits på den valgte GitHub-grenen. En side på
+`localhost` viser filene i mappen der `npm run dev` ble startet; CMS-et oppdaterer
+ikke denne mappen automatisk. Hent endringene med `git pull --ff-only` i klonen av
+`algardsbu/SGSSL_Webpage`, på samme gren som er valgt i CMS-et. En kjørende
+utviklingsserver oppdaterer deretter innholdet. Ved `npm run preview` må
+`npm run build` kjøres på nytt.
+
+Den opprinnelige `Webteknologi-IT2805/sgssl`-mappen tilhører et annet repository.
+Å trekke inn endringer der henter ikke CMS-innholdet fra GitHub; bruk den dedikerte
+GitHub-klonen til videre utvikling. På det offentlige nettstedet kreves et
+vellykket bygg og aktivert utrulling før endringen vises.
+
 ## Første artikkel
 
 1. Åpne **Nyheter**, velg ny artikkel, og skriv en reell tittel og kort beskrivelse. La **Publisert**, **Ønskes delt på Facebook** og **Ønskes delt på Instagram** stå av.

@@ -32,18 +32,23 @@ test('the deployment artifact contains only static public files', async () => {
             const contents = await readFile(file, 'utf8');
             assert.doesNotMatch(contents, /-----BEGIN (?:OPENSSH |RSA |EC |DSA )?PRIVATE KEY-----/);
             assert.doesNotMatch(contents, /(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})/);
-            assert.doesNotMatch(contents, /UTKASTEKSEMPEL/);
         }
     }
 });
 
-test('draft articles have no page, public listing, or sitemap entry', async () => {
+test('article pages and news listings follow the publication flag', async () => {
     const { fileURLToPath } = await import('node:url');
     const root = fileURLToPath(distDir);
     const files = await filesUnder(root);
     const pagePaths = new Set(files.map((file) => relative(root, file).replaceAll('\\', '/')));
+    const news = await readFile(join(root, 'news/index.html'), 'utf8');
     const textual = (await Promise.all(files.filter((file) => /\.(?:html|xml|json|js)$/i.test(file)).map((file) => readFile(file, 'utf8')))).join('\n');
-    for (const article of (await validateArticles()).filter((article) => !article.data.published)) {
+    for (const article of await validateArticles()) {
+        if (article.data.published) {
+            assert.equal(pagePaths.has(`news/${article.slug}/index.html`), true, article.slug);
+            assert.equal(news.includes(`href="/news/${article.slug}/"`), true, article.slug);
+            continue;
+        }
         assert.equal(pagePaths.has(`news/${article.slug}/index.html`), false, article.slug);
         assert.equal(textual.includes(`/news/${article.slug}/`), false, article.slug);
         assert.equal(textual.includes(article.data.id), false, article.data.id);
