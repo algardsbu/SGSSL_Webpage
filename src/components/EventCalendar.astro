@@ -50,7 +50,7 @@ const weekdayNames = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørd
       {initialEvents.map((event: CalendarEvent) => (
         <li class="calendar-event">
           <h4>{event.title}</h4>
-          <p class="calendar-event-meta"><time datetime={`${event.date}${event.time ? `T${event.time}` : ''}`}>{formatDay(event.date)}{event.time ? ` · kl. ${event.time}` : ''}</time></p>
+          <p class="calendar-event-meta"><time datetime={`${event.date}${event.time ? `T${event.time.split('-')[0]}` : ''}`}>{formatDay(event.date)}{event.time ? ` · kl. ${event.time}` : ''}</time></p>
           {event.location && <p class="calendar-event-location">{event.location}</p>}
           {event.description && <p class="calendar-event-description">{event.description}</p>}
         </li>
@@ -128,7 +128,7 @@ const weekdayNames = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørd
           const meta = document.createElement('p');
           meta.className = 'calendar-event-meta';
           const time = document.createElement('time');
-          time.dateTime = `${event.date}${event.time ? `T${event.time}` : ''}`;
+          time.dateTime = `${event.date}${event.time ? `T${event.time.split('-')[0]}` : ''}`;
           time.textContent = `${formatDay(event.date)}${event.time ? ` · kl. ${event.time}` : ''}`;
           meta.append(time);
           item.append(title, meta);

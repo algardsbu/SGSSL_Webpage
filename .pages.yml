@@ -38,7 +38,7 @@ content:
       - name: time
         label: Klokkeslett
         type: string
-        description: 'Norsk lokal tid, for eksempel 18:00. La stå tomt for hele dagen.'
+        description: 'Norsk lokal tid, for eksempel 18:00 eller 14:00-16:00. La stå tomt for hele dagen.'
       - name: location
         label: Sted
         type: string

@@ -31,6 +31,7 @@ test('upcoming calendar excludes drafts and past dates and sorts by date/time', 
     event({ title: 'All day' }), event({ title: 'Draft', published: false }),
     event({ title: 'Past', date: '2026-09-23' }), event({ title: 'Future', date: '2026-10-01' }),
   ]);
+  assert.equal(validateEvents([event({ time: '14:00-16:00' })])[0].time, '14:00-16:00');
   assert.deepEqual(upcomingEvents(events, '2026-09-24').map(item => item.title), ['All day', 'Morning', 'Evening']);
   assert.deepEqual(eventsOnDate(events, '2026-09-24').map(item => item.title), ['All day', 'Morning', 'Evening']);
   assert.equal(upcomingEvents(events, '2027-01-01').length, 0);
@@ -40,7 +41,7 @@ test('CMS events default to drafts and validate dates, times, metadata and stabl
   const draft = event();
   delete draft.published;
   assert.equal(validateEvents([draft])[0].published, false);
-  for (const overrides of [{ date: '2026-02-30' }, { date: '2026-9-2' }, { date: '0000-01-01' }, { time: '25:00' }, { time: '9:30' }, { title: '' }, { id: 'bad-id' }, { published: 'false' }, { location: {} }, { description: 'x'.repeat(1001) }, { injected: true }]) {
+  for (const overrides of [{ date: '2026-02-30' }, { date: '2026-9-2' }, { date: '0000-01-01' }, { time: '25:00' }, { time: '9:30' }, { time: '14:00-' }, { title: '' }, { id: 'bad-id' }, { published: 'false' }, { location: {} }, { description: 'x'.repeat(1001) }, { injected: true }]) {
     assert.throws(() => validateEvents([event(overrides)]));
   }
   const duplicated = event();

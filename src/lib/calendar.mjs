@@ -73,7 +73,7 @@ export function validateEvents(input) {
     if (typeof event.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(event.date) || event.date.startsWith('0000-')) throw new Error('Calendar date must be YYYY-MM-DD, in years 0001–9999');
     const date = new Date(`${event.date}T00:00:00Z`);
     if (!Number.isFinite(date.valueOf()) || date.toISOString().slice(0, 10) !== event.date) throw new Error('Invalid calendar date');
-    if (event.time !== undefined && (typeof event.time !== 'string' || (event.time !== '' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(event.time)))) throw new Error('Calendar time must be HH:mm');
+    if (event.time !== undefined && (typeof event.time !== 'string' || (event.time !== '' && !/^([01]\d|2[0-3]):[0-5]\d(?:-([01]\d|2[0-3]):[0-5]\d)?$/.test(event.time)))) throw new Error('Calendar time must be HH:mm or HH:mm-HH:mm');
     for (const [name, max] of [['location', 200], ['description', 1000]]) {
       if (event[name] !== undefined && (typeof event[name] !== 'string' || event[name].length > max)) throw new Error(`Invalid calendar ${name}`);
     }

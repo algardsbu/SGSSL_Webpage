@@ -15,7 +15,7 @@ Nettsiden bruker [hosted Pages CMS](https://app.pagescms.org) til redigering. De
 ## Arrangementer og kalender
 
 Åpne **Arrangementer** i Pages CMS og legg til en oppføring. Fyll inn tittel,
-dato, eventuelt klokkeslett (for eksempel `18:00`), sted og en kort beskrivelse.
+dato, eventuelt klokkeslett (for eksempel `18:00` eller `14:00-16:00`), sted og en kort beskrivelse.
 Klokkeslett er norsk lokal tid; tomt klokkeslett betyr hele dagen. Hver oppføring
 får en fast UUID automatisk. Nye arrangementer er upubliserte til **Publisert**
 slås på. Lagre listen når du er ferdig.
