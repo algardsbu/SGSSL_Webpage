@@ -31,6 +31,14 @@ Kalenderdata lagres i `src/data/events.json`. Det finnes ingen fiktive arrangeme
 i startoppsettet. CMS-endringer må hentes lokalt eller bygges og rulles ut før de
 vises på nettsiden, på samme måte som nyheter.
 
+### Bildegalleri i en nyhet
+
+I en artikkel finnes feltet **Bildegalleri** under hovedbildet. Velg opptil tolv
+bilder fra mediebiblioteket; nettstedet viser dem automatisk i et responsivt
+galleri mellom ingressen og artikkelteksten. Dette feltet brukes for bilder som
+skal styres av CMS-et. Artikkelteksten har fortsatt en visuell teksteditor for
+formatering og lenker.
+
 ## Se CMS-endringer lokalt
 
 Pages CMS lagrer endringer som commits på den valgte GitHub-grenen. En side på

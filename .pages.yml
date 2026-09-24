@@ -118,6 +118,16 @@ content:
         description: Beskriv hva bildet viser for lesere som ikke kan se det.
         options:
           maxlength: 500
+      - name: gallery
+        label: Bildegalleri
+        type: image
+        description: Velg opptil tolv bilder. De vises som et bildegalleri mellom ingressen og artikkelteksten.
+        options:
+          media: images
+          multiple:
+            max: 12
+          unique: true
+          extensions: [jpg, jpeg, png, webp]
       - name: body
         label: Artikkeltekst
         type: rich-text

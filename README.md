@@ -38,6 +38,8 @@ Før første nettlesertest kjører du `npx playwright install chromium` (på Lin
 
 `/news/` viser publiserte artikler, og forsiden viser de tre nyeste. Filnavnet gir den faste `/news/<slug>/`-adressen. Tittelendring endrer ikke adressen eller artikkelens UUID. Publiseringsdato styrer visning og sortering; fremtidige datoer er ikke tidsstyrt publisering. Duplikate ID-er, ugyldige filnavn, manglende bilder og feil metadata stopper byggingen. Markdown renses for aktiv HTML; MDX er ikke aktivert.
 
+Nyheter kan ha ett hovedbilde og opptil tolv CMS-styrte galleribilder. Galleriet velges i feltet **Bildegalleri** og vises automatisk mellom ingressen og artikkelteksten.
+
 `/events/` viser en interaktiv månedskalender med valg av måned og dag, arrangementsdetaljer og de seks neste arrangementene. Forsiden viser en kompakt kalender og de tre neste. Kalenderen bruker norsk tid (Europe/Oslo), mandag som første ukedag og fungerer med tastatur. Bare publiserte arrangementer inkluderes i bygget; tidligere arrangementer kan finnes ved å bla bakover. Uten JavaScript vises en liste fra byggetidspunktet.
 
 Gamle `.html`-adresser får statiske HTML-omdirigeringer med en klikkbar reservelenke. `/index.html` viser fortsatt forsiden. De gamle admin-/login-adressene leder til hosted Pages CMS, og «Admin Login» finnes i bunnteksten. Det finnes ingen lokal innlogging eller passorddatabase i applikasjonen.

@@ -8,7 +8,7 @@ import { visit } from 'unist-util-visit';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const fields = new Set(['id', 'title', 'description', 'date', 'image', 'imageAlt', 'published', 'facebook', 'facebookCaption', 'instagram', 'instagramCaption']);
+const fields = new Set(['id', 'title', 'description', 'date', 'image', 'imageAlt', 'gallery', 'published', 'facebook', 'facebookCaption', 'instagram', 'instagramCaption']);
 
 export function validDate(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -77,6 +77,11 @@ export async function validateArticle({ slug, data, body }, options = {}) {
   }
   if (typeof body !== 'string' || !body.trim()) throw new Error(`Missing article body in ${slug}`);
   await validateImage(data.image, options);
+  if (data.gallery !== undefined && (!Array.isArray(data.gallery) || data.gallery.length > 12)) throw new Error(`Invalid gallery in ${slug}; choose at most 12 images`);
+  const gallery = data.gallery ?? [];
+  if (!Array.isArray(gallery) || gallery.some((image) => typeof image !== 'string') || new Set(gallery).size !== gallery.length) throw new Error(`Invalid gallery in ${slug}; use unique uploaded images`);
+  for (const image of gallery) await validateImage(image, options);
+  normalized.gallery = gallery;
   const tree = unified().use(remarkParse).use(remarkGfm).parse(body);
   const definitions = new Map();
   const images = [];

@@ -25,6 +25,13 @@ const { Content } = await render(article);
       <p class="article-description">{article.data.description}</p>
     </header>
     <img class="article-image" src={article.data.image} alt={article.data.imageAlt} />
+    {article.data.gallery.length > 0 && (
+      <div class="article-gallery" aria-label="Bilder i artikkelen">
+        {article.data.gallery.map((image, index) => (
+          <img src={image} alt={`${article.data.title} – bilde ${index + 1}`} loading="lazy" />
+        ))}
+      </div>
+    )}
     <div class="prose"><Content /></div>
   </article>
 </SiteLayout>

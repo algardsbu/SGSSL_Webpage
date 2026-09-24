@@ -23,6 +23,7 @@ const articles = defineCollection({
     ),
     image: z.string().startsWith('/images/'),
     imageAlt: z.string().trim().min(1).max(500),
+    gallery: z.array(z.string().startsWith('/images/')).max(12).default([]),
     published: z.boolean().default(false),
     facebook: z.boolean().default(false),
     facebookCaption: z.string().max(5000).default(''),

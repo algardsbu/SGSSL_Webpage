@@ -29,7 +29,7 @@ test('article metadata rejects invalid dates, booleans and missing fields', asyn
   for (const overrides of [
     { id: 'invalid' }, { title: '' }, { description: ' ' }, { date: '2026-02-30' },
     { date: '2026-01-01T12:00:00Z' }, { published: 'false' }, { facebook: 'true' },
-    { instagram: 1 }, { imageAlt: '' }, { image: '/images/missing.webp' }, { slug: 'override' },
+    { instagram: 1 }, { imageAlt: '' }, { image: '/images/missing.webp' }, { gallery: 'not-an-array' }, { gallery: ['/images/missing.webp'] }, { slug: 'override' },
   ]) {
     await assert.rejects(validateArticle({ slug: 'stabil-url', data: { ...valid, ...overrides }, body: 'Innhold' }, { publicDir }));
   }
@@ -69,6 +69,9 @@ test('CMS schema defaults to drafts, keeps stable filenames and configures permi
   assert.equal(fields.id.type, 'uuid');
   assert.equal(fields.id.readonly, true);
   for (const name of ['published', 'facebook', 'instagram']) assert.equal(fields[name].default, false);
+  assert.equal(fields.gallery.type, 'image');
+  assert.equal(fields.gallery.options.multiple.max, 12);
+  assert.equal(fields.gallery.options.unique, true);
   assert.ok(articles.view.fields.includes('published'));
   const media = Array.isArray(cms.media) ? cms.media[0] : cms.media;
   assert.equal(media.input, 'public/images');
