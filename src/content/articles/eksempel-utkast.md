@@ -5,7 +5,7 @@ description: Et eksempel for redaktører. Dette er ikke en nyhet fra klubben.
 date: 2026-09-24
 image: /images/SGSSL_LOGO.webp
 imageAlt: Logoen til Sandnes og Gjesdal Skiskytterlag
-published: false
+published: true
 facebook: false
 instagram: false
 ---
