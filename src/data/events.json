@@ -1,0 +1,11 @@
+[
+  {
+    "id": "dc262795-4cd9-4def-9bdc-b08348441bb0",
+    "title": "Test",
+    "date": "2026-09-30",
+    "time": "14:00-16:00",
+    "location": "Melshei",
+    "description": "Dette er en test av kalenderen",
+    "published": true
+  }
+]

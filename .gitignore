@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.astro/
+playwright-report/
+test-results/
+.data/
+.env
+.env.*
+!.env.example
+*.log
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.pem
+*.key

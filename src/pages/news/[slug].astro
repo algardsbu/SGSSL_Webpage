@@ -1,0 +1,30 @@
+---
+import { render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getPublishedArticles, formatDate, type Article } from '../../lib/articles';
+
+export const getStaticPaths = (async () => {
+  const articles = await getPublishedArticles();
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article } }));
+}) satisfies GetStaticPaths;
+
+interface Props { article: Article; }
+const { article } = Astro.props;
+const { Content } = await render(article);
+---
+
+<SiteLayout title={article.data.title} description={article.data.description}
+  image={article.data.image} imageAlt={article.data.imageAlt}
+  publishedDate={article.data.date} mainClass="page-content article-page">
+  <a class="back-link" href="/news/">← Alle nyheter</a>
+  <article>
+    <header class="article-heading">
+      <time datetime={article.data.date}>{formatDate(article.data.date)}</time>
+      <h1>{article.data.title}</h1>
+      <p class="article-description">{article.data.description}</p>
+    </header>
+    <img class="article-image" src={article.data.image} alt={article.data.imageAlt} />
+    <div class="prose"><Content /></div>
+  </article>
+</SiteLayout>

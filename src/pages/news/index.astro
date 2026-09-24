@@ -1,0 +1,12 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { getPublishedArticles } from '../../lib/articles';
+
+const articles = await getPublishedArticles();
+---
+
+<SiteLayout title="Nyheter" description="Nyheter fra Sandnes og Gjesdal Skiskytterlag.">
+  <h1>Nyheter</h1>
+  <ArticleList articles={articles} />
+</SiteLayout>

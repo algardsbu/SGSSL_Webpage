@@ -1,0 +1,29 @@
+---
+import { articleUrl, formatDate, type Article } from '../lib/articles';
+
+interface Props { articles: Article[]; }
+const { articles } = Astro.props;
+---
+
+{articles.length > 0 ? (
+  <ul class="article-list">
+    {articles.map((article) => (
+      <li>
+        <article class="article-card">
+          <a href={articleUrl(article)} tabindex="-1" aria-hidden="true">
+            <img src={article.data.image} alt="" loading="lazy" width="640" height="400" />
+          </a>
+          <div class="article-card-content">
+            <time datetime={article.data.date}>{formatDate(article.data.date)}</time>
+            <h2><a href={articleUrl(article)}>{article.data.title}</a></h2>
+            <p>{article.data.description}</p>
+          </div>
+        </article>
+      </li>
+    ))}
+  </ul>
+) : (
+  <div class="empty-news">
+    <p>Ingen nyheter er publisert ennå. Følg med her for nytt fra klubben.</p>
+  </div>
+)}

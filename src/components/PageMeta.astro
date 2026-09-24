@@ -1,0 +1,40 @@
+---
+import { SITE_NAME, SITE_DESCRIPTION } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  publishedDate?: string;
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  image = '/images/sgssl-homepage.webp',
+  imageAlt = 'Medlemmer i Sandnes og Gjesdal Skiskytterlag samlet utendørs.',
+  publishedDate,
+} = Astro.props;
+const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+const socialImage = Astro.site ? new URL(image, Astro.site).href : image;
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<meta name="theme-color" content="#17212c" />
+{canonical && <link rel="canonical" href={canonical} />}
+<meta property="og:locale" content="nb_NO" />
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:type" content={publishedDate ? 'article' : 'website'} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:image" content={socialImage} />
+<meta property="og:image:alt" content={imageAlt} />
+{publishedDate && <meta property="article:published_time" content={`${publishedDate}T00:00:00Z`} />}
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/webp" href="/images/SGSSL_LOGO.webp" />
