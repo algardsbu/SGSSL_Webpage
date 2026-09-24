@@ -5,8 +5,13 @@ description: Dette er et nytt bilde
 date: 2026-09-24
 image: /images/sgssl-homepage.webp
 imageAlt: bilde
-published: false
+published: true
 facebook: false
 instagram: false
 ---
 Dette er ett gruppebilde
+
+![sgssl-homepage.webp](/images/sgssl-homepage.webp)
+
+![](/images/Placeholder_view_vector.svg.webp)
+
