@@ -450,9 +450,9 @@ time { font-size: 0.9rem; }
 .article-heading, .article-page .prose { max-width: 900px; }
 .article-heading h1 { color: var(--background); line-height: 1.2; margin: 12px 0; font-size: clamp(1.75rem, 4vw, 2.75rem); }
 .article-description { font-size: 1.15rem; }
-.article-image { width: 100%; max-height: min(72vh, 760px); height: auto; object-fit: contain; object-position: center; display: block; border-radius: 6px; background: #f5f8fa; }
+.article-image { width: 100%; max-height: min(72vh, 760px); height: auto; object-fit: contain; object-position: center; display: block; border-radius: 6px; }
 .article-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 16px; margin: 24px 0 8px; }
-.article-gallery img { display: block; width: 100%; height: auto; align-self: start; object-fit: contain; border-radius: 6px; background: #f5f8fa; }
+.article-gallery img { display: block; width: 100%; height: auto; align-self: start; object-fit: contain; border-radius: 6px; }
 .prose { color: #3e464c; }
 .prose img { max-width: 100%; height: auto; }
 .prose pre { padding: 16px; overflow-x: auto; background: #eef3f8; }
