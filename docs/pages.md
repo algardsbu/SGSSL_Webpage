@@ -1,8 +1,9 @@
 # Klubbens informasjonssider
 
 Klubbens eksisterende informasjonssider vedlikeholdes i kode. De er fortsatt
-merket «Under utvikling» inntil klubben har skrevet innholdet. Nyheter redigeres
-i Pages CMS, se prosjektets README.
+merket «Under utvikling» inntil klubben har skrevet innholdet. Nyheter og arrangementer redigeres
+i Pages CMS. Arrangementssiden (`/events/`) og kalenderen på forsiden deler
+innhold fra `src/data/events.json`; se [CMS-veiledningen](cms.md).
 
 For en ny informasjonsside:
 

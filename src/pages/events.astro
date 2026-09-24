@@ -1,8 +1,11 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import EventCalendar from '../components/EventCalendar.astro';
+import { getPublicEvents } from '../lib/events';
 ---
 
-<SiteLayout title="Arrangementer" description="Arrangementer i Sandnes og Gjesdal Skiskytterlag. Informasjonssiden er under utvikling.">
+<SiteLayout title="Arrangementer" description="Se kommende arrangementer i Sandnes og Gjesdal Skiskytterlag. Finn dato, tid og sted i klubbens kalender.">
   <h1>Arrangementer</h1>
-  <p>Under utvikling</p>
+  <p class="events-intro">Få oversikt over det som skjer i klubben. Velg en dato for å se tid, sted og mer informasjon om arrangementene.</p>
+  <EventCalendar events={getPublicEvents()} variant="full" />
 </SiteLayout>

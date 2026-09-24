@@ -1,4 +1,4 @@
-# Nyheter i Pages CMS
+# Nyheter og arrangementer i Pages CMS
 
 Nettsiden bruker [hosted Pages CMS](https://app.pagescms.org) til redigering. Det finnes ingen lokal innlogging, passorddatabase eller Express-server. Nyheter lagres som Markdown i `src/content/articles/`; klubbsidene redigeres i Astro-koden.
 
@@ -6,11 +6,30 @@ Nettsiden bruker [hosted Pages CMS](https://app.pagescms.org) til redigering. De
 
 1. Åpne [algardsbu/SGSSL_Webpage](https://github.com/algardsbu/SGSSL_Webpage). Nettstedet og `.pages.yml` ligger i roten på `setup/astro-pages-cms`. Velg denne grenen i CMS-et for å kontrollere oppsettet før endringen innlemmes i `main`.
 2. Eieren logger inn på [app.pagescms.org](https://app.pagescms.org), installerer Pages CMS sin GitHub App for dette repositoryet og åpner repositoryet og ønsket gren i CMS-et. Etter at oppsettsendringen er innlemmet, velges `main` som produksjonsgren. Installasjonen må godkjennes av en bruker som kan administrere repositoryet. Se [Pages CMS quick start](https://pagescms.org/docs/quick-start/).
-3. Kontroller at **Nyheter** og **Bilder** vises. `.pages.yml` definerer norske feltnavn, publiseringsstatus i listen og tillatte bildeformater.
+3. Kontroller at **Nyheter**, **Arrangementer** og **Bilder** vises. `.pages.yml` definerer norske feltnavn, publiseringsstatus i listen og tillatte bildeformater.
 4. Inviter redaktører via e-post fra Pages CMS sin samarbeidsfunksjon. Bruk en separat testinvitasjon til kontrollen nedenfor før faktisk publisering.
 5. Sett valgfritt repository-variabelen `PUBLIC_CMS_URL` til den HTTPS-adressen som CMS-et viser for dette repositoryet. Ellers går «Admin Login» til `https://app.pagescms.org`. CMS-adressen er offentlig og må ikke inneholde innloggingstokens.
 
 [Pages CMS sine dokumenterte samarbeidstillatelser](https://pagescms.org/docs/configuration/collaborators/) lar inviterte redaktører redigere innhold og medier uten GitHub-konto. Administrasjon av `.pages.yml` og invitasjoner forblir hos GitHub-brukere med repositorytilgang. Denne løsningen bruker disse tillatelsene uten egendefinerte roller. Invitasjoner lagres i Pages CMS, ikke i `.pages.yml`.
+
+## Arrangementer og kalender
+
+Åpne **Arrangementer** i Pages CMS og legg til en oppføring. Fyll inn tittel,
+dato, eventuelt klokkeslett (for eksempel `18:00`), sted og en kort beskrivelse.
+Klokkeslett er norsk lokal tid; tomt klokkeslett betyr hele dagen. Hver oppføring
+får en fast UUID automatisk. Nye arrangementer er upubliserte til **Publisert**
+slås på. Lagre listen når du er ferdig.
+
+De samme publiserte arrangementene brukes på forsiden og på `/events/`.
+Forsiden viser en kompakt kalender og de neste arrangementene; arrangementssiden
+har en større månedskalender. Velg en dag for tid, sted og beskrivelse, bruk
+pilene eller månedsvelgeren for å bytte måned, og **I dag** for å gå tilbake.
+Gamle arrangementer er fortsatt tilgjengelige på sin dato, men utelates fra
+listen over kommende arrangementer. Slå av **Publisert** for å skjule en oppføring.
+
+Kalenderdata lagres i `src/data/events.json`. Det finnes ingen fiktive arrangementer
+i startoppsettet. CMS-endringer må hentes lokalt eller bygges og rulles ut før de
+vises på nettsiden, på samme måte som nyheter.
 
 ## Se CMS-endringer lokalt
 
@@ -52,4 +71,4 @@ Dette krever det faktiske repositoryet og hosted CMS-et og er derfor ikke kjørt
 - Publisering gir en artikkel etter vellykket Actions-kjøring; avpublisering fjerner siden etter neste kjøring.
 - Redaktøren kan ikke administrere `.pages.yml` eller andre samarbeidspartnere.
 
-Kilder for konfigurasjonen: [filnavn](https://pagescms.org/docs/configuration/content/filename/), [UUID](https://pagescms.org/docs/configuration/fields/uuid/), [operasjoner](https://pagescms.org/docs/configuration/content/operations/), [listevisning](https://pagescms.org/docs/configuration/content/view/) og [medier](https://pagescms.org/docs/configuration/media/).
+Kilder for konfigurasjonen: [redigerbare lister](https://pagescms.org/docs/configuration/content/), [filnavn](https://pagescms.org/docs/configuration/content/filename/), [UUID](https://pagescms.org/docs/configuration/fields/uuid/), [operasjoner](https://pagescms.org/docs/configuration/content/operations/), [listevisning](https://pagescms.org/docs/configuration/content/view/) og [medier](https://pagescms.org/docs/configuration/media/).

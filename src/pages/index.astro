@@ -2,6 +2,8 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import ArticleList from '../components/ArticleList.astro';
 import { getPublishedArticles } from '../lib/articles';
+import EventCalendar from '../components/EventCalendar.astro';
+import { getPublicEvents } from '../lib/events';
 
 const latestArticles = (await getPublishedArticles()).slice(0, 3);
 ---
@@ -30,8 +32,9 @@ const latestArticles = (await getPublishedArticles()).slice(0, 3);
       <a class="button biathlon-school-button" href="https://skiskyting.no/skiskytterskole/sandnes-og-gjesdal-skiskytterlag/">Mer Informasjon</a>
     </div>
     <div class="information-inner ahead">
-      <h2>Dette skjer fremmover</h2>
-      <p>Kalender kommer</p>
+      <h2>Dette skjer fremover</h2>
+      <EventCalendar events={getPublicEvents()} />
+      <p><a href="/events/">Se hele kalenderen →</a></p>
     </div>
   </section>
 

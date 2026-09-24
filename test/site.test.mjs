@@ -93,7 +93,7 @@ test('build preserves club pages, news, legacy redirects and CMS links', async (
     assert.match(redirect, /https:\/\/app.pagescms.org/);
     assert.doesNotMatch(redirect, /<form/i);
   }
-  for (const page of ['about', 'contact', 'events', 'member-application', 'results', 'trainings']) {
+  for (const page of ['about', 'contact', 'member-application', 'results', 'trainings']) {
     assert.match(await readFile(join('dist', page, 'index.html'), 'utf8'), /Under utvikling/);
   }
 });
@@ -106,6 +106,10 @@ test('published build renders Markdown, keeps slugs after title edits and remove
   }
   await symlink(join(root, 'node_modules'), join(fixture, 'node_modules'), 'dir');
   const contentDir = join(fixture, 'src/content/articles');
+  await writeFile(join(fixture, 'src/data/events.json'), JSON.stringify([
+    { id: randomUUID(), title: 'CALENDAR-PUBLIC-FIXTURE', date: '2099-09-24', time: '18:00', location: 'Teststed', published: true },
+    { id: randomUUID(), title: 'CALENDAR-DRAFT-PRIVATE', date: '2099-09-24', description: 'PRIVATE-EVENT-DESCRIPTION', published: false },
+  ]));
   await rm(contentDir, { recursive: true });
   await mkdir(contentDir);
   const articleData = [
@@ -126,6 +130,10 @@ test('published build renders Markdown, keeps slugs after title edits and remove
   await build();
   const read = path => readFile(join(fixture, 'dist', path), 'utf8');
   const homepage = await read('index.html');
+  const eventPage = await read('events/index.html');
+  assert.match(homepage, /CALENDAR-PUBLIC-FIXTURE/);
+  assert.match(eventPage, /CALENDAR-PUBLIC-FIXTURE/);
+  assert.doesNotMatch(homepage + eventPage, /CALENDAR-DRAFT-PRIVATE|PRIVATE-EVENT-DESCRIPTION/);
   const news = await read('news/index.html');
   assert.ok(homepage.indexOf('Fremtidig datert nyhet') < homepage.indexOf('Nyeste nyhet'));
   assert.ok(homepage.indexOf('Nyeste nyhet') < homepage.indexOf('Mellomste nyhet'));

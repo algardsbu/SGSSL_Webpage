@@ -1,0 +1,375 @@
+---
+import { todayInOslo, formatDay, upcomingEvents } from '../lib/calendar.mjs';
+
+interface CalendarEvent {
+  id: string;
+  title: string;
+  date: string;
+  time?: string;
+  location?: string;
+  description?: string;
+  published: boolean;
+}
+interface Props { events: CalendarEvent[]; variant?: 'compact' | 'full'; }
+
+const { events, variant = 'compact' } = Astro.props;
+const initialEvents = upcomingEvents(events, todayInOslo(), variant === 'full' ? 6 : 3);
+const weekdays = ['Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'];
+const weekdayNames = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag', 'Søndag'];
+---
+
+<sgssl-event-calendar class="event-calendar" data-event-calendar data-variant={variant} data-events={JSON.stringify(events.filter(event => event.published))}>
+  <div class="calendar-interactive" data-calendar-interactive hidden>
+    <div class="calendar-toolbar">
+      <h3 class="calendar-month" data-month-label aria-live="polite" aria-atomic="true"></h3>
+      <div class="calendar-controls">
+        <button class="calendar-today" type="button" data-today>I dag</button>
+        <button class="calendar-arrow" type="button" data-previous aria-label="Forrige måned">‹</button>
+        <button class="calendar-arrow" type="button" data-next aria-label="Neste måned">›</button>
+      </div>
+    </div>
+    {variant === 'full' && (
+      <label class="calendar-month-picker">
+        <span>Velg måned</span>
+        <input type="month" data-month-picker min="0001-01" max="9999-12" />
+      </label>
+    )}
+    <div class="calendar-weekdays" aria-hidden="true">
+      {weekdays.map((day, index) => <span title={weekdayNames[index]}>{day}</span>)}
+    </div>
+    <div class="calendar-grid" data-calendar-grid role="group" aria-label="Velg en dato"></div>
+    <div class="calendar-legend"><span class="calendar-dot" aria-hidden="true"></span> Planlagt arrangement</div>
+  </div>
+
+  <div class="calendar-details" data-event-details aria-live="polite" aria-atomic="true">
+    <div class="calendar-details-heading">
+      <h3 data-events-heading>Kommende arrangementer</h3>
+      <button class="calendar-reset" type="button" data-show-upcoming hidden>Vis kommende</button>
+    </div>
+    <ul class="calendar-event-list" data-event-list hidden={initialEvents.length === 0}>
+      {initialEvents.map((event: CalendarEvent) => (
+        <li class="calendar-event">
+          <h4>{event.title}</h4>
+          <p class="calendar-event-meta"><time datetime={`${event.date}${event.time ? `T${event.time}` : ''}`}>{formatDay(event.date)}{event.time ? ` · kl. ${event.time}` : ''}</time></p>
+          {event.location && <p class="calendar-event-location">{event.location}</p>}
+          {event.description && <p class="calendar-event-description">{event.description}</p>}
+        </li>
+      ))}
+    </ul>
+    <p class="calendar-empty" data-event-empty hidden={initialEvents.length > 0}>Ingen kommende arrangementer er publisert ennå.</p>
+  </div>
+  <noscript><p class="calendar-no-script">Slå på JavaScript for å bla i kalenderen. Kommende arrangementer vises ovenfor.</p></noscript>
+</sgssl-event-calendar>
+
+<script>
+  import {
+    todayInOslo, monthDays, shiftMonth, formatMonth, formatDay, upcomingEvents, eventsOnDate,
+  } from '../lib/calendar.mjs';
+
+  interface CalendarEvent {
+    id: string;
+    title: string;
+    date: string;
+    time?: string;
+    location?: string;
+    description?: string;
+    published: boolean;
+  }
+
+  class EventCalendar extends HTMLElement {
+    #initialized = false;
+
+    connectedCallback() {
+      if (this.#initialized) return;
+      const interactive = this.querySelector<HTMLElement>('[data-calendar-interactive]');
+      const grid = this.querySelector<HTMLElement>('[data-calendar-grid]');
+      const monthLabel = this.querySelector<HTMLElement>('[data-month-label]');
+      const heading = this.querySelector<HTMLElement>('[data-events-heading]');
+      const list = this.querySelector<HTMLUListElement>('[data-event-list]');
+      const empty = this.querySelector<HTMLElement>('[data-event-empty]');
+      const reset = this.querySelector<HTMLButtonElement>('[data-show-upcoming]');
+      const monthPicker = this.querySelector<HTMLInputElement>('[data-month-picker]');
+      const previous = this.querySelector<HTMLButtonElement>('[data-previous]');
+      const next = this.querySelector<HTMLButtonElement>('[data-next]');
+      if (!interactive || !grid || !monthLabel || !heading || !list || !empty || !reset) return;
+      this.#initialized = true;
+
+      let events: CalendarEvent[];
+      try {
+        events = (JSON.parse(this.dataset.events || '[]') as CalendarEvent[])
+          .filter((event) => event.published === true);
+      } catch {
+        // Preserve the server-rendered list if the browser cannot read its data.
+        return;
+      }
+      const today = todayInOslo();
+      const full = this.dataset.variant === 'full';
+      let year = Number(today.slice(0, 4));
+      let month = Number(today.slice(5, 7)) - 1;
+      let selectedDate: string | null = null;
+
+      const renderDetails = () => {
+        const visibleEvents: CalendarEvent[] = selectedDate
+          ? eventsOnDate(events, selectedDate)
+          : upcomingEvents(events, today, full ? 6 : 3);
+        heading.textContent = selectedDate ? formatDay(selectedDate) : 'Kommende arrangementer';
+        reset.hidden = selectedDate === null;
+        empty.hidden = visibleEvents.length > 0;
+        empty.textContent = selectedDate
+          ? 'Ingen arrangementer denne dagen.'
+          : 'Ingen kommende arrangementer er publisert ennå.';
+        list.hidden = visibleEvents.length === 0;
+        list.replaceChildren();
+        for (const event of visibleEvents) {
+          const item = document.createElement('li');
+          item.className = 'calendar-event';
+          const title = document.createElement('h4');
+          title.textContent = event.title;
+          const meta = document.createElement('p');
+          meta.className = 'calendar-event-meta';
+          const time = document.createElement('time');
+          time.dateTime = `${event.date}${event.time ? `T${event.time}` : ''}`;
+          time.textContent = `${formatDay(event.date)}${event.time ? ` · kl. ${event.time}` : ''}`;
+          meta.append(time);
+          item.append(title, meta);
+          if (event.location) {
+            const location = document.createElement('p');
+            location.className = 'calendar-event-location';
+            location.textContent = event.location;
+            item.append(location);
+          }
+          if (event.description) {
+            const description = document.createElement('p');
+            description.className = 'calendar-event-description';
+            description.textContent = event.description;
+            item.append(description);
+          }
+          list.append(item);
+        }
+      };
+
+      const renderMonth = (focusDate?: string) => {
+        monthLabel.textContent = formatMonth(year, month);
+        if (previous) previous.disabled = year === 1 && month === 0;
+        if (next) next.disabled = year === 9999 && month === 11;
+        if (monthPicker) monthPicker.value = `${String(year).padStart(4, '0')}-${String(month + 1).padStart(2, '0')}`;
+        grid.setAttribute('aria-label', `${formatMonth(year, month)}. Velg en dato.`);
+        grid.replaceChildren();
+        const days: (string | null)[] = monthDays(year, month);
+        const tabDate = focusDate || (selectedDate && days.includes(selectedDate) ? selectedDate : null)
+          || (days.includes(today) ? today : days.find(Boolean));
+        for (const date of days) {
+          if (!date) {
+            const padding = document.createElement('span');
+            padding.className = 'calendar-padding';
+            padding.setAttribute('aria-hidden', 'true');
+            grid.append(padding);
+            continue;
+          }
+          const dayEvents = eventsOnDate(events, date);
+          const count = dayEvents.length;
+          const day = document.createElement('button');
+          day.type = 'button';
+          day.className = 'calendar-day';
+          day.dataset.date = date;
+          const number = document.createElement('span');
+          number.className = 'calendar-day-number';
+          number.textContent = String(Number(date.slice(8)));
+          day.append(number);
+          day.tabIndex = date === tabDate ? 0 : -1;
+          day.setAttribute('aria-label', `${formatDay(date)}${date === today ? ', i dag' : ''}${count ? `, ${count} arrangement${count === 1 ? '' : 'er'}` : ''}`);
+          day.setAttribute('aria-pressed', String(date === selectedDate));
+          if (date === today) day.setAttribute('aria-current', 'date');
+          if (count) {
+            const dot = document.createElement('span');
+            dot.className = 'calendar-dot';
+            dot.setAttribute('aria-hidden', 'true');
+            day.append(dot);
+            day.dataset.hasEvents = 'true';
+            if (full) {
+              const titles = document.createElement('span');
+              titles.className = 'calendar-day-titles';
+              titles.setAttribute('aria-hidden', 'true');
+              for (const event of dayEvents.slice(0, 2)) {
+                const title = document.createElement('span');
+                title.className = 'calendar-day-event-title';
+                title.dataset.dayEventTitle = '';
+                title.textContent = `${event.time ? `${event.time} ` : ''}${event.title}`;
+                title.title = event.title;
+                titles.append(title);
+              }
+              if (count > 2) {
+                const more = document.createElement('span');
+                more.className = 'calendar-day-more';
+                more.textContent = `+ ${count - 2} til`;
+                titles.append(more);
+              }
+              day.append(titles);
+            }
+          }
+          grid.append(day);
+        }
+        if (focusDate) grid.querySelector<HTMLButtonElement>(`[data-date="${focusDate}"]`)?.focus();
+      };
+
+      previous?.addEventListener('click', () => {
+        if (year === 1 && month === 0) return;
+        ({ year, month } = shiftMonth(year, month, -1));
+        renderMonth();
+      });
+      next?.addEventListener('click', () => {
+        if (year === 9999 && month === 11) return;
+        ({ year, month } = shiftMonth(year, month, 1));
+        renderMonth();
+      });
+      this.querySelector('[data-today]')?.addEventListener('click', () => {
+        year = Number(today.slice(0, 4));
+        month = Number(today.slice(5, 7)) - 1;
+        selectedDate = today;
+        renderMonth();
+        renderDetails();
+      });
+      monthPicker?.addEventListener('change', () => {
+        const value = monthPicker.value;
+        if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(value) || Number(value.slice(0, 4)) < 1) return;
+        year = Number(value.slice(0, 4));
+        month = Number(value.slice(5, 7)) - 1;
+        renderMonth();
+      });
+      reset.addEventListener('click', () => {
+        selectedDate = null;
+        renderMonth();
+        renderDetails();
+        this.querySelector<HTMLButtonElement>('[data-today]')?.focus();
+      });
+      grid.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const button = event.target.closest<HTMLButtonElement>('[data-date]');
+        if (!button?.dataset.date) return;
+        selectedDate = button.dataset.date;
+        renderMonth(selectedDate);
+        renderDetails();
+      });
+      grid.addEventListener('keydown', (event) => {
+        if (!(event.target instanceof HTMLButtonElement) || !event.target.dataset.date) return;
+        const date = new Date(`${event.target.dataset.date}T12:00:00Z`);
+        const weekday = (date.getUTCDay() + 6) % 7;
+        const offsets: Record<string, number> = {
+          ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7, Home: -weekday, End: 6 - weekday,
+        };
+        if (!(event.key in offsets)) return;
+        event.preventDefault();
+        date.setUTCDate(date.getUTCDate() + offsets[event.key]);
+        if (date.getUTCFullYear() < 1 || date.getUTCFullYear() > 9999) return;
+        const focusDate = date.toISOString().slice(0, 10);
+        year = date.getUTCFullYear();
+        month = date.getUTCMonth();
+        renderMonth(focusDate);
+      });
+
+      renderMonth();
+      renderDetails();
+      interactive.hidden = false;
+      this.dataset.ready = 'true';
+    }
+  }
+
+  if (!customElements.get('sgssl-event-calendar')) {
+    customElements.define('sgssl-event-calendar', EventCalendar);
+  }
+</script>
+
+<style>
+  .event-calendar {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin-top: 20px;
+    border: 1px solid #dce4eb;
+    border-radius: 14px;
+    background: #fff;
+    color: #455462;
+    overflow: hidden;
+  }
+  .event-calendar [hidden] { display: none !important; }
+  .calendar-interactive { padding: 18px 18px 14px; }
+  .calendar-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+  .calendar-month { margin: 0; color: var(--background); font-size: 1.05rem; font-weight: 700; line-height: 1.3; text-transform: capitalize; }
+  .calendar-controls { display: flex; flex-shrink: 0; align-items: center; gap: 5px; }
+  .event-calendar button { font: inherit; cursor: pointer; touch-action: manipulation; }
+  .calendar-today, .calendar-arrow { height: 36px; border: 1px solid #dce4eb; border-radius: 7px; color: #27435b; background: #fff; }
+  .calendar-today { padding: 0 10px; font-size: .8rem !important; font-weight: 700 !important; white-space: nowrap; }
+  .calendar-arrow { width: 34px; padding: 0; font-size: 1.7rem !important; line-height: 1 !important; }
+  .calendar-today:hover, .calendar-arrow:hover { background: #edf4fa; border-color: #a9c0d2; }
+  .calendar-arrow:disabled { opacity: .35; cursor: default; background: #fff; border-color: #dce4eb; }
+  .calendar-weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .calendar-weekdays { margin-bottom: 7px; color: #687684; font-size: .72rem; text-align: center; font-weight: 700; }
+  .calendar-month-picker { display: flex; align-items: center; gap: 10px; margin: -4px 0 20px; font-size: .8rem; color: #586a77; }
+  .calendar-month-picker input { min-width: 0; max-width: 190px; padding: 7px 9px; border: 1px solid #dce4eb; border-radius: 7px; background: #fff; color: #273f52; font: inherit; }
+  .calendar-grid { grid-auto-rows: 38px; }
+  .event-calendar :global(.calendar-day) {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    padding: 0 0 3px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    color: #384c5d;
+    background: transparent;
+    font: inherit;
+    font-size: .85rem;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .event-calendar :global(.calendar-day:hover) { background: #edf4fa; }
+  .event-calendar :global(.calendar-day[aria-current="date"]) { border-color: #a7c3da; background: #eef5fb; color: #195582; font-weight: 700; }
+  .event-calendar :global(.calendar-day[aria-pressed="true"]) { background: var(--background); border-color: var(--background); color: #fff; font-weight: 700; }
+  .event-calendar :global(.calendar-day-titles) { display: none; }
+  .calendar-dot, .event-calendar :global(.calendar-dot) { display: inline-block; flex-shrink: 0; width: 5px; height: 5px; border-radius: 50%; background: var(--primary-button); }
+  .event-calendar :global(.calendar-day .calendar-dot) { position: absolute; bottom: 5px; left: calc(50% - 2.5px); }
+  .calendar-legend { display: flex; align-items: center; gap: 7px; margin-top: 12px; color: #667580; font-size: .72rem; }
+  .calendar-details { border-top: 1px solid #e1e8ee; padding: 16px 18px; background: #f6f9fc; }
+  .calendar-details-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 5px 12px; margin-bottom: 8px; }
+  .calendar-details-heading h3 { margin: 0; color: #273f52; font-size: .86rem; font-weight: 700; }
+  .calendar-reset { padding: 0; border: 0; background: transparent; color: #2364a3; text-decoration: underline; text-underline-offset: 3px; font-size: .75rem !important; }
+  .calendar-empty { margin: 0; font-size: .85rem; line-height: 1.55; }
+  .calendar-event-list { margin: 0; padding: 0; list-style: none; }
+  .event-calendar :global(.calendar-event) { padding: 10px 0; }
+  .event-calendar :global(.calendar-event + .calendar-event) { border-top: 1px solid #dce4eb; }
+  .event-calendar :global(.calendar-event h4) { margin: 0 0 3px; font-size: .94rem; line-height: 1.4; color: var(--background); overflow-wrap: anywhere; }
+  .event-calendar :global(.calendar-event p) { margin: 2px 0 0; font-size: .8rem; line-height: 1.5; overflow-wrap: anywhere; }
+  .event-calendar :global(.calendar-event time) { font-size: inherit; }
+  .event-calendar :global(.calendar-event-description) { color: #586a77; }
+  .calendar-no-script { margin: 0; padding: 0 18px 14px; font-size: .75rem; background: #f6f9fc; }
+  @media (min-width: 760px) {
+    .event-calendar[data-variant="full"][data-ready] { display: grid; grid-template-columns: minmax(0, 2.3fr) minmax(230px, 1fr); }
+    .event-calendar[data-variant="full"] .calendar-interactive { padding: 24px; }
+    .event-calendar[data-variant="full"] .calendar-details { border-top: 0; border-left: 1px solid #e1e8ee; padding: 24px 20px; }
+    .event-calendar[data-variant="full"] .calendar-month { font-size: 1.35rem; }
+    .event-calendar[data-variant="full"] .calendar-grid { grid-auto-rows: 104px; gap: 5px; }
+    .event-calendar[data-variant="full"] .calendar-weekdays { font-size: .8rem; }
+    .event-calendar[data-variant="full"] :global(.calendar-day) { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 7px; padding: 7px 4px; border-color: #e6ecf1; text-align: left; }
+    .event-calendar[data-variant="full"] :global(.calendar-day-number) { padding-left: 3px; font-size: .8rem; }
+    .event-calendar[data-variant="full"] :global(.calendar-day-titles) { display: block; min-width: 0; width: 100%; }
+    .event-calendar[data-variant="full"] :global(.calendar-day-event-title) { display: block; width: 100%; margin-top: 3px; padding: 3px 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-radius: 3px; background: #eaf2f9; color: #24597e; font-size: .64rem; line-height: 1.25; font-weight: 400; }
+    .event-calendar[data-variant="full"] :global(.calendar-day[aria-pressed="true"] .calendar-day-event-title) { background: #ffffff20; color: #fff; }
+    .event-calendar[data-variant="full"] :global(.calendar-day-more) { display: block; margin-top: 4px; padding-left: 4px; font-size: .6rem; }
+    .event-calendar[data-variant="full"] :global(.calendar-day .calendar-dot) { top: 10px; right: 7px; bottom: auto; left: auto; }
+    .event-calendar[data-variant="full"] .calendar-no-script { grid-column: 1 / -1; }
+  }
+  @media (max-width: 400px) {
+    .calendar-interactive { padding: 14px 10px 12px; }
+    .calendar-toolbar { gap: 6px; margin-bottom: 14px; }
+    .calendar-month { font-size: .9rem; }
+    .calendar-controls { gap: 3px; }
+    .calendar-arrow { width: 29px; }
+    .calendar-today { padding: 0 7px; }
+    .calendar-details { padding: 14px 12px; }
+    .calendar-grid, .calendar-weekdays { gap: 2px; }
+    .calendar-grid { grid-auto-rows: 36px; }
+  }
+</style>

@@ -1,6 +1,6 @@
 # Sandnes og Gjesdal Skiskytterlag
 
-Statisk nettsted med Astro og TypeScript. Eksisterende norsk innhold, bilder og CSS er bevart. Nyheter redigeres i hosted Pages CMS og bygges fra Markdown. Node.js trengs bare til utvikling, testing og bygging; webhotellet trenger ingen applikasjonsserver.
+Statisk nettsted med Astro og TypeScript. Eksisterende norsk innhold, bilder og CSS er bevart. Nyheter og arrangementer redigeres i hosted Pages CMS. Nyhetene bygges fra Markdown, og kalenderen bruker en validert arrangementsliste. Node.js trengs bare til utvikling, testing og bygging; webhotellet trenger ingen applikasjonsserver.
 
 ## Kom i gang
 
@@ -16,7 +16,7 @@ npm run dev
 | Kommando | Formål |
 | --- | --- |
 | `npm run dev` | Lokal Astro-utviklingsserver |
-| `npm run check` | Valider artikler, bilder og Astro/TypeScript |
+| `npm run check` | Valider artikler, arrangementer, bilder og Astro/TypeScript |
 | `npm run build` | Valider og bygg bare offentlige filer til `dist/` |
 | `npm run preview` | Se det ferdige statiske bygget lokalt |
 | `npm test` | Bygg og kjør innholds-, sikkerhets-, publiserings- og SFTP-tester |
@@ -27,15 +27,18 @@ Før første nettlesertest kjører du `npx playwright install chromium` (på Lin
 
 ## Innhold og struktur
 
-- `src/pages/`, `src/layouts/` og `src/components/`: delte sider, navigasjon, metadata og bunntekst. Informasjonssidene forblir merket «Under utvikling».
+- `src/pages/`, `src/layouts/` og `src/components/`: delte sider, navigasjon, metadata og bunntekst. Uferdige informasjonssider forblir merket «Under utvikling».
 - `src/styles/global.css`: videreføring av den eksisterende CSS-en; ingen Tailwind.
 - `src/content/articles/`: validerte Markdown-artikler. Det medfølgende eksempelet er et upublisert utkast.
-- `.pages.yml`: norske CMS-felter, bildeopplasting og synlig publiseringsstatus.
+- `src/data/events.json`: CMS-styrte arrangementer med dato, valgfritt klokkeslett, sted, beskrivelse og publiseringsstatus. Starter tom.
+- `.pages.yml`: norske CMS-felter for nyheter og arrangementer, bildeopplasting og synlig publiseringsstatus.
 - `public/images/`: JPEG-, PNG- og WebP-bilder. `public/pictures/` bevarer de gamle bildeadressene.
 - `scripts/`: validering, statiske omdirigeringer/sitemap og SFTP-utrulling.
 - `.github/workflows/site.yml`: validering av pull requests og bygging/valgfri utrulling fra `main`.
 
 `/news/` viser publiserte artikler, og forsiden viser de tre nyeste. Filnavnet gir den faste `/news/<slug>/`-adressen. Tittelendring endrer ikke adressen eller artikkelens UUID. Publiseringsdato styrer visning og sortering; fremtidige datoer er ikke tidsstyrt publisering. Duplikate ID-er, ugyldige filnavn, manglende bilder og feil metadata stopper byggingen. Markdown renses for aktiv HTML; MDX er ikke aktivert.
+
+`/events/` viser en interaktiv månedskalender med valg av måned og dag, arrangementsdetaljer og de seks neste arrangementene. Forsiden viser en kompakt kalender og de tre neste. Kalenderen bruker norsk tid (Europe/Oslo), mandag som første ukedag og fungerer med tastatur. Bare publiserte arrangementer inkluderes i bygget; tidligere arrangementer kan finnes ved å bla bakover. Uten JavaScript vises en liste fra byggetidspunktet.
 
 Gamle `.html`-adresser får statiske HTML-omdirigeringer med en klikkbar reservelenke. `/index.html` viser fortsatt forsiden. De gamle admin-/login-adressene leder til hosted Pages CMS, og «Admin Login» finnes i bunnteksten. Det finnes ingen lokal innlogging eller passorddatabase i applikasjonen.
 

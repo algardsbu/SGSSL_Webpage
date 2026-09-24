@@ -7,6 +7,53 @@ media:
     rename: safe
 
 content:
+  - name: events
+    label: Arrangementer
+    type: file
+    path: src/data/events.json
+    format: json
+    list: true
+    fields:
+      - name: id
+        label: Fast arrangements-ID
+        type: uuid
+        required: true
+        readonly: true
+        options:
+          editable: false
+          generate: false
+      - name: title
+        label: Tittel
+        type: string
+        required: true
+        options:
+          maxlength: 160
+      - name: date
+        label: Dato
+        type: date
+        required: true
+        options:
+          time: false
+          format: yyyy-MM-dd
+      - name: time
+        label: Klokkeslett
+        type: string
+        description: 'Norsk lokal tid, for eksempel 18:00. La stå tomt for hele dagen.'
+      - name: location
+        label: Sted
+        type: string
+        options:
+          maxlength: 200
+      - name: description
+        label: Beskrivelse
+        type: text
+        options:
+          maxlength: 1000
+      - name: published
+        label: Publisert
+        type: boolean
+        default: false
+        description: 'Vis arrangementet i kalenderen på forsiden og arrangementssiden etter neste bygg og utrulling.'
   - name: articles
     label: Nyheter
     type: collection

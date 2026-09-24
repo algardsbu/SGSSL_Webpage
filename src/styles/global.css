@@ -190,14 +190,15 @@ a { color: #2364a3; }
 
 .information{
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
   max-width: var(--max);
   margin: auto;
 }
 
 .information-inner{
-  padding: 18px 20px;
+  padding: 28px 20px;
+  min-width: 0;
 }
 
 .information-inner:first-child{
@@ -205,6 +206,7 @@ a { color: #2364a3; }
 }
 
 .information-inner h2{color: #2364a3; font-size: 1.25rem;}
+.events-intro { max-width: 720px; margin-bottom: 28px; }
 
 .biathlon-school-button{
   background-color: var(--primary-button);
@@ -430,7 +432,7 @@ a { color: #2364a3; }
 }
 
 /* News uses the existing club colors and shared page spacing. */
-.news-section { max-width: var(--max); margin: auto; padding: 24px 20px 32px; }
+.news-section { max-width: var(--max); margin: 12px auto 0; padding: 32px 20px 40px; border-top: 2px solid #d9e0e6; }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; }
 .section-heading h2 { margin: 0 0 16px; color: var(--background); }
 .empty-news { padding: 16px 20px; background: #eef3f8; border-left: 4px solid var(--logo); }
