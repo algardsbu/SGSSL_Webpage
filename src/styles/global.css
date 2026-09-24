@@ -444,9 +444,18 @@ a { color: #2364a3; }
 .article-card h2 { margin: 8px 0; font-size: 1.3rem; line-height: 1.35; }
 .article-card p { margin-bottom: 0; }
 time { font-size: 0.9rem; }
-.article-page { max-width: 1180px; padding-top: 24px; padding-bottom: 40px; }
+.article-page { position: relative; max-width: 1280px; padding-top: 24px; padding-bottom: 40px; }
 .back-link { display: inline-block; margin-bottom: 24px; }
+.article-layout { display: grid; grid-template-columns: 220px minmax(0, 900px); gap: 42px; align-items: start; }
+.article-layout:not(.article-layout-with-toc) { display: block; }
 .article-page article { min-width: 0; }
+.article-toc { position: sticky; top: 24px; max-height: calc(100vh - 48px); overflow-y: auto; padding: 4px 0 4px 14px; border-left: 2px solid #d9e0e6; }
+.article-toc-label { margin: 0 0 10px; color: var(--logo); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.article-toc ol { margin: 0; padding: 0; list-style: none; }
+.article-toc li { margin: 0; }
+.article-toc a { display: block; padding: 5px 8px; color: #53616c; font-size: .86rem; line-height: 1.35; text-decoration: none; }
+.article-toc a:hover, .article-toc a:focus-visible { color: var(--logo); text-decoration: underline; }
+.article-toc-subitem { padding-left: 12px; }
 .article-heading, .article-page .prose { max-width: 900px; }
 .article-heading h1 { color: var(--background); line-height: 1.2; margin: 12px 0; font-size: clamp(1.75rem, 4vw, 2.75rem); }
 .article-description { font-size: 1.15rem; }
@@ -459,6 +468,12 @@ time { font-size: 0.9rem; }
 .prose blockquote { margin-left: 0; padding-left: 20px; border-left: 4px solid var(--border); }
 .prose table { display: block; overflow-x: auto; border-collapse: collapse; }
 .prose th, .prose td { padding: 8px 12px; border: 1px solid var(--border); }
+.article-progress { position: fixed; z-index: 20; top: 0; left: 0; width: 100%; height: 4px; pointer-events: none; background: transparent; }
+.article-progress span { display: block; width: 0; height: 100%; background: var(--logo); transition: width .1s linear; }
 @media (max-width: 900px) { .article-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 980px) {
+  .article-layout { display: block; }
+  .article-toc { display: none; }
+}
 @media (max-width: 600px) { .article-list { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .article-gallery { grid-template-columns: 1fr; } }

@@ -9,6 +9,7 @@ import { test } from 'node:test';
 import { parse, stringify } from 'yaml';
 import { parse as parseHTML } from 'parse5';
 import { validateArticle, validateArticles } from '../src/lib/content-validation.mjs';
+import { extractHeadings } from '../src/lib/article-headings.mjs';
 import { pageRedirects, adminRedirects } from '../scripts/static-output.mjs';
 
 const exec = promisify(execFile);
@@ -21,6 +22,14 @@ const data = (overrides = {}) => ({
   ...overrides,
 });
 const markdown = (metadata, body = 'Testinnhold med **uthevet tekst**.') => `---\n${stringify(metadata)}---\n\n${body}\n`;
+
+test('article headings produce stable desktop table-of-contents anchors', () => {
+  assert.deepEqual(extractHeadings('## Første del\n\n### Detaljer\n\n## Første del'), [
+    { depth: 2, text: 'Første del', id: 'forste-del' },
+    { depth: 3, text: 'Detaljer', id: 'detaljer' },
+    { depth: 2, text: 'Første del', id: 'forste-del-2' },
+  ]);
+});
 
 test('article metadata rejects invalid dates, booleans and missing fields', async () => {
   const valid = data();
