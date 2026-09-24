@@ -1,0 +1,108 @@
+media:
+  - name: images
+    label: Bilder
+    input: public/images
+    output: /images
+    extensions: [jpg, jpeg, png, webp]
+    rename: safe
+
+content:
+  - name: articles
+    label: Nyheter
+    type: collection
+    path: src/content/articles
+    format: yaml-frontmatter
+    subfolders: false
+    filename:
+      template: '{title}.md'
+      field: false
+    operations:
+      create: true
+      delete: true
+      rename: false
+    view:
+      primary: title
+      fields: [title, published, date]
+      sort: [date, title, published]
+      search: [title, description]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: id
+        label: Fast artikkel-ID
+        type: uuid
+        required: true
+        readonly: true
+        options:
+          editable: false
+          generate: false
+      - name: title
+        label: Tittel
+        type: string
+        required: true
+        options:
+          maxlength: 160
+      - name: description
+        label: Kort beskrivelse
+        type: text
+        required: true
+        options:
+          maxlength: 320
+      - name: date
+        label: Publiseringsdato
+        type: date
+        required: true
+        description: 'Datoen vises på nettsiden og bestemmer rekkefølgen. Fremtidig dato utsetter ikke publisering.'
+        options:
+          time: false
+          format: yyyy-MM-dd
+      - name: image
+        label: Hovedbilde
+        type: image
+        required: true
+        options:
+          media: images
+          extensions: [jpg, jpeg, png, webp]
+      - name: imageAlt
+        label: Alternativ tekst for hovedbildet
+        type: string
+        required: true
+        description: Beskriv hva bildet viser for lesere som ikke kan se det.
+        options:
+          maxlength: 500
+      - name: body
+        label: Artikkeltekst
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          media: images
+          extensions: [jpg, jpeg, png, webp]
+      - name: published
+        label: Publisert
+        type: boolean
+        default: false
+        description: 'Av = utkast. På = publiseres ved neste vellykkede utrulling.'
+      - name: facebook
+        label: Ønskes delt på Facebook
+        type: boolean
+        default: false
+        description: Kun metadata. Automatisk deling er ikke aktivert.
+      - name: facebookCaption
+        label: Tekst til Facebook
+        type: text
+        default: ''
+        options:
+          maxlength: 5000
+      - name: instagram
+        label: Ønskes delt på Instagram
+        type: boolean
+        default: false
+        description: Kun metadata. Automatisk deling er ikke aktivert.
+      - name: instagramCaption
+        label: Tekst til Instagram
+        type: text
+        default: ''
+        options:
+          maxlength: 5000

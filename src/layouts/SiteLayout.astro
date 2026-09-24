@@ -1,0 +1,26 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageMeta from '../components/PageMeta.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  publishedDate?: string;
+  mainClass?: string;
+}
+const { mainClass = 'page-content', ...metadata } = Astro.props;
+---
+
+<!doctype html>
+<html lang="nb">
+  <head><PageMeta {...metadata} /></head>
+  <body>
+    <Header />
+    <main id="main-content" class={mainClass} tabindex="-1"><slot /></main>
+    <Footer />
+  </body>
+</html>

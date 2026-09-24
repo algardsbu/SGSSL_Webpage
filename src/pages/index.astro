@@ -1,0 +1,55 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ArticleList from '../components/ArticleList.astro';
+import { getPublishedArticles } from '../lib/articles';
+
+const latestArticles = (await getPublishedArticles()).slice(0, 3);
+---
+
+<SiteLayout mainClass="homepage">
+  <div class="homepage-picture">
+    <img src="/images/sgssl-homepage.webp"
+      alt="Medlemmer i Sandnes og Gjesdal Skiskytterlag samlet utendørs i klubbklær."
+      width="2048" height="2048" fetchpriority="high" />
+  </div>
+
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-inner">
+      <p class="eyebrow">SANDNES OG GJESDAL SKISKYTTERLAG</p>
+      <h1 id="hero-heading">Sammen om skiskyttergleden.</h1>
+      <p>Et fellesskap for treningsglede, mestring og utvikling. Bli med oss i Melsheia, enten du er ny på standplass eller har mange kilometer bak deg.</p>
+      <a class="button join-button" href="/member-application/">Bli medlem →</a>
+      <a class="button about-button" href="/about/">Om klubben</a>
+    </div>
+  </section>
+
+  <section class="information" aria-label="Informasjon fra klubben">
+    <div class="information-inner biathlon-school">
+      <h2>Er du helt ny til Skiskyting?</h2>
+      <p>Da må du være med på BAMA Skiskytterskolen for å få begynne</p>
+      <a class="button biathlon-school-button" href="https://skiskyting.no/skiskytterskole/sandnes-og-gjesdal-skiskytterlag/">Mer Informasjon</a>
+    </div>
+    <div class="information-inner ahead">
+      <h2>Dette skjer fremmover</h2>
+      <p>Kalender kommer</p>
+    </div>
+  </section>
+
+  <section class="news-section" aria-labelledby="news-heading">
+    <div class="section-heading">
+      <h2 id="news-heading">Siste nytt</h2>
+      <a href="/news/">Alle nyheter →</a>
+    </div>
+    <ArticleList articles={latestArticles} />
+  </section>
+
+  <section class="sponsors sponsors-area" aria-labelledby="sponsor-heading">
+    <h2 id="sponsor-heading">Våre samarbeidspartnere</h2>
+    <div class="sponsors-inner">
+      <div class="sponsor"><img src="/images/austrått-kaffebrenneri.webp" alt="Austrått Kaffebrenneri" loading="lazy" /></div>
+      {Array.from({ length: 7 }, () => (
+        <div class="sponsor"><img src="/images/Placeholder_view_vector.svg.webp" alt="" loading="lazy" /></div>
+      ))}
+    </div>
+  </section>
+</SiteLayout>

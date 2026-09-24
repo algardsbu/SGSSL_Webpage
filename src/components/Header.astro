@@ -1,0 +1,60 @@
+---
+import { SITE_NAME } from '../lib/site';
+
+const links = [
+  { href: '/', label: 'Hjem' },
+  { href: '/trainings/', label: 'Treninger' },
+  { href: '/events/', label: 'Arrangementer' },
+  { href: '/results/', label: 'Resultater' },
+  { href: '/news/', label: 'Nyheter' },
+  { href: '/contact/', label: 'Kontaktinformasjon' },
+];
+const currentPath = Astro.url.pathname;
+---
+
+<a class="skip-link" href="#main-content">Hopp til innhold</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/">
+      <img src="/images/SGSSL_LOGO.webp" alt="" width="50" height="50" />
+      <span>{SITE_NAME}</span>
+    </a>
+    <button class="menu-button" type="button" aria-expanded="false"
+      aria-controls="primary-nav" aria-label="Åpne meny">☰</button>
+    <nav class="primary-nav" id="primary-nav" aria-label="Hovedmeny">
+      {links.map(({ href, label }) => (
+        <a href={href} aria-current={currentPath === href ? 'page' : undefined}
+          class:list={{ 'section-current': href === '/news/' && currentPath.startsWith('/news/') }}>
+          {label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const menuButton = document.querySelector<HTMLButtonElement>('.menu-button');
+  const navigation = document.querySelector<HTMLElement>('.primary-nav');
+  if (menuButton && navigation) {
+    navigation.dataset.enhanced = 'true';
+    menuButton.dataset.enhanced = 'true';
+    const setOpen = (open: boolean) => {
+      navigation.classList.toggle('open', open);
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? 'Lukk meny' : 'Åpne meny');
+      menuButton.textContent = open ? '✕' : '☰';
+    };
+    menuButton.addEventListener('click', () => {
+      setOpen(menuButton.getAttribute('aria-expanded') !== 'true');
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        menuButton.focus();
+      }
+    });
+    navigation.addEventListener('click', (event) => {
+      if (event.target instanceof HTMLAnchorElement) setOpen(false);
+    });
+  }
+</script>
